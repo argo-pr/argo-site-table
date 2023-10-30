@@ -9,7 +9,7 @@ export default async function Account() {
         <main>
             <h1 className="text-3xl font-semibold my-6">Аккаунт</h1>
             <div className="space-y-6">
-                <UserSettings session={session}/>
+                {session ? <UserSettings session={session}/> : null}
             </div>
         </main>
     );
