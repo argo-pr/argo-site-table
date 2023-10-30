@@ -52,9 +52,7 @@ export default function SignIn() {
             router.refresh()
         }
     }
-    useEffect(() => {
-        clearErrors()
-    }, [])
+
     return (
         <Card className={"mx-auto mt-12 w-[360px] py-6"}>
             <CardHeader>
@@ -82,7 +80,9 @@ export default function SignIn() {
                             />
                             <Button
                                 className={"border-none ml-[-40px]"}
-                                size={"icon"} variant={"ghost"} type={"button"}
+                                size={"icon"}
+                                variant={"ghost"}
+                                type={"button"}
                                 onClick={() => setShowPassword(!showPassword)}>
                                 {showPassword ? <EyeOff size={20}/> : <Eye size={20}/>}
                             </Button>

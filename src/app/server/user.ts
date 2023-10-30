@@ -1,5 +1,6 @@
 "use server"
 import {Prisma, User} from ".prisma/client"
+import bcrypt from "bcrypt";
 
 const verifyUsername = async (username: string) => {
     try {
@@ -8,8 +9,39 @@ const verifyUsername = async (username: string) => {
                 username,
             },
         })
+        if (response === null) {
+            return {status: 200, message: "Пользователь успешно создан."}
+        } else {
+            return {
+                status: 403,
+                message:
+                    "Пользователь с таким именем уже существует. Пожалуйста, используйте другое имя.",
+            }
+        }
+    } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+            if (e.code === "P2002") {
+                return {
+                    status: 403,
+                    message:
+                        "Пользователь с таким именем уже существует. Пожалуйста, используйте другое имя.",
+                }
+            }
+        }
+        return {status: 500, message: "Серверная ошибка"}
+    }
+}
 
-        if (response?.id) {
+const createNewUser = async (data: { username: string; password: string }) => {
+    try {
+        const response = await db?.user.create({
+            data: {
+                username: data.username,
+                password: bcrypt.hashSync(data.password, 10),
+                role: "USER",
+            },
+        })
+        if (response) {
             return {status: 200, message: "Пользователь успешно создан."}
         }
     } catch (e) {
@@ -26,4 +58,5 @@ const verifyUsername = async (username: string) => {
     }
 }
 
-export {verifyUsername}
+
+export {verifyUsername, createNewUser}
