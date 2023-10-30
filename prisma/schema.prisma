@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 enum Role {
@@ -31,10 +32,10 @@ model Order {
   id              String   @id @default(cuid())
   user_id         String
   user            User     @relation(fields: [user_id], references: [id])
-  article         String   @db.LongText
-  equipment       String   @db.LongText
-  production_date String   @db.LongText
-  warranty_period String   @db.LongText
+  article         String   @db.Text
+  equipment       String   @db.Text
+  production_date String   @db.Text
+  warranty_period String   @db.Text
   serial_number   String
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
@@ -48,8 +49,8 @@ model Account {
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.LongText
-  access_token      String? @db.LongText
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
