@@ -36,7 +36,7 @@ export default function OrdersPage({params}: { params: { slug: string, order: Ui
                         <Suspense fallback={<>Loadinf...</>}>
                             <object
                                 className={"mx-auto overflow-x-scroll min-w-4xl"}
-                                data={"http://localhost:3000/api/order/" + params.slug + "/#zoom=85&scrollbar=0&toolbar=0&navpanes=0"}
+                                data={"/../../api/order/" + params.slug + "/#zoom=85&scrollbar=0&toolbar=0&navpanes=0"}
                                 type="application/pdf"
                                 width="75%"
                                 height="980px"
