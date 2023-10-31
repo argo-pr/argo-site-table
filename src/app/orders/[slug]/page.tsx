@@ -1,19 +1,27 @@
 "use client"
 
-import React, {Suspense, useEffect, useState} from "react";
+import React, {DetailedHTMLProps, ObjectHTMLAttributes, Suspense, useEffect, useRef, useState} from "react";
 import {Button} from "@/components/ui/button";
-import {ArrowUpRightSquare, FileText} from "lucide-react";
+import {ArrowUpRightSquare, FileText, Loader2} from "lucide-react";
 import Link from "next/link";
 
 
-export default function OrdersPage({params}: { params: { slug: string, order: Uint8Array } }) {
+export default function OrdersPage({params}: { params: { slug: string } }) {
     const [url, setUrl] = useState("")
+    const [IsMounted, setIsMounted] = useState(false)
 
     useEffect(() => {
         const host = window.location.hostname
         const port = window.location.port
         const protocol = window.location.protocol
         setUrl(protocol + "//" + host + ":" + port + "/api/order/" + params.slug + "/")
+    }, [])
+
+
+    const mounted: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
+    useEffect(() => {
+        const timeout = setTimeout(() => setIsMounted(true), 1500)
+        return () => clearTimeout(timeout)
     }, [])
     return <>
         <div className={"overflow-x-hidden"}>
@@ -32,15 +40,22 @@ export default function OrdersPage({params}: { params: { slug: string, order: Ui
                             </Link>
                         </Button>
                     </div>
+                    {!IsMounted &&
+                        <Loader2 className={"w-12 mt-12 h-12 animate-spin mx-auto"}/>
+                    }
                     <div className="mx-auto overflow-x-auto w-full h-full">
-                        <Suspense fallback={<>Loadinf...</>}>
-                            <object
-                                className={"mx-auto overflow-x-scroll min-w-4xl"}
-                                data={"/../../api/order/" + params.slug + "/#zoom=85&scrollbar=0&toolbar=0&navpanes=0"}
-                                type="application/pdf"
-                                width="75%"
-                                height="980px"
-                            />
+
+                        <Suspense fallback={<>Loading...</>}>
+
+                            <div className={`${IsMounted ? "" : "hidden"} w-full mx-auto`}>
+                                <object
+                                    className={"mx-auto overflow-x-scroll min-w-4xl" + IsMounted ? "" : " hidden"}
+                                    data={"/../../api/order/" + params.slug + "/#zoom=85&scrollbar=0&toolbar=0&navpanes=0"}
+                                    type="application/pdf"
+                                    width="100%"
+                                    height="980"
+                                />
+                            </div>
                         </Suspense>
 
                     </div>

@@ -16,13 +16,20 @@ const findOrdersByUserId = async (userId: string) => {
     })
 }
 
-const isUserHasCurrentOrder = async (userId: string, orderId: string) => {
-    const order = await db.order.findUnique({
+const findOrderBySerialNumber = async (serialNumber: string) => {
+    return await db.order.findUnique({
         where: {
-            id: orderId,
+            serial_number: serialNumber,
         },
+        select: {
+            id: true,
+            serial_number: true,
+            article: true,
+            equipment: true,
+            production_date: true,
+            warranty_period: true,
+        }
     })
-    return order
 }
 
-export {findOrdersByUserId, isUserHasCurrentOrder}
+export {findOrdersByUserId, findOrderBySerialNumber}

@@ -136,14 +136,15 @@ export const columns: ColumnDef<Data>[] = [
                         </DropdownMenuItem>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem>
-                            <Link href={"/../orders/" + data.id + "/"} className={"flex flex-row gap-4 items-center"}>
+                            <Link href={"/../orders/" + data.serial_number + "/"}
+                                  className={"flex flex-row gap-4 items-center"}>
                                 <MoveUpRight size={20}/>
                                 Открыть паспорт
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             className={"flex flex-row gap-4 items-center"}>
-                            <Link href={"/../api/order/" + data.id + "/?download=true"}
+                            <Link href={"/../api/order/" + data.serial_number + "/?download=true"}
                                   className={"flex flex-row gap-4 items-center"}>
                                 <FileDown size={20}/>
                                 Скачать паспорт

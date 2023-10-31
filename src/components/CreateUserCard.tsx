@@ -62,7 +62,7 @@ export default function CreateUserCard() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline">Создать пользователя</Button>
+                <Button variant="outline" className={"w-4/5"}>Создать</Button>
             </DialogTrigger>
             <DialogContent>
                 {stage !== 2 && <DialogHeader>
