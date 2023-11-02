@@ -1,5 +1,5 @@
 "use server"
-import {Prisma, User} from ".prisma/client"
+import {Prisma} from ".prisma/client"
 import bcrypt from "bcrypt";
 
 const verifyUsername = async (username: string) => {
@@ -58,5 +58,19 @@ const createNewUser = async (data: { username: string; password: string }) => {
     }
 }
 
+const getAllUsers = async () => {
+    try {
+        const response = await db?.user.findMany({
+            select: {
+                id: true,
+                username: true,
+                role: true,
+            }
+        })
+        return {status: 200, users: response}
+    } catch (e) {
+        return {status: 500, message: "Серверная ошибка"}
+    }
 
-export {verifyUsername, createNewUser}
+}
+export {verifyUsername, createNewUser, getAllUsers}

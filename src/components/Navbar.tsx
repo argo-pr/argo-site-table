@@ -1,3 +1,5 @@
+// noinspection HtmlUnknownTarget
+
 import Link from "next/link"
 
 import {ModeToggle} from "@/components/ui/ThemeToggle"

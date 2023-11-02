@@ -10,12 +10,12 @@ export const runInConsole = () => {
     const date = new Date();
     const today = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
     const backupFile = `pg-backup-${today}.tar`;
-
-    execute(`pg_dump -U ${username} -h ${dbHost} -p ${dbPort} -f $/tmp/${backupFile} -F t -d ${database}`)
-        .then(async () => {
-            console.log(`Backup created successfully`);
-        })
-        .catch((err: any) => {
-            console.log(err);
-        });
+    
+    // execute(`pg_dump -U ${username} -h ${dbHost} -p ${dbPort} -f $/tmp/${backupFile} -F t -d ${database}`)
+    //     .then(async () => {
+    //         console.log(`Backup created successfully`);
+    //     })
+    //     .catch((err: any) => {
+    //         console.log(err);
+    //     });
 }

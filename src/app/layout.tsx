@@ -6,6 +6,7 @@ import NextAuthProvider from "@/lib/auth/Provider"
 import {Toaster} from "@/components/ui/toaster"
 import Navbar from "@/components/Navbar"
 import {ThemeProvider} from "@/components/ThemeProvider"
+import {ReactNode} from "react";
 
 export const metadata: Metadata = {
     title: "TechPass",
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({children}: {
-    children: React.ReactNode
+    children: ReactNode
 }) {
     return (
         <html lang="ru">

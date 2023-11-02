@@ -1,6 +1,6 @@
 "use client"
 
-import React, {DetailedHTMLProps, ObjectHTMLAttributes, Suspense, useEffect, useRef, useState} from "react";
+import React, {Suspense, useEffect, useRef, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {ArrowUpRightSquare, FileText, Loader2} from "lucide-react";
 import Link from "next/link";
@@ -16,9 +16,7 @@ export default function OrdersPage({params}: { params: { slug: string } }) {
         const protocol = window.location.protocol
         setUrl(protocol + "//" + host + ":" + port + "/api/order/" + params.slug + "/")
     }, [])
-
-
-    const mounted: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
+    
     useEffect(() => {
         const timeout = setTimeout(() => setIsMounted(true), 1500)
         return () => clearTimeout(timeout)

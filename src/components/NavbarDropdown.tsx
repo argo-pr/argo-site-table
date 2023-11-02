@@ -1,3 +1,5 @@
+// noinspection HtmlUnknownTarget
+
 "use client"
 
 import {

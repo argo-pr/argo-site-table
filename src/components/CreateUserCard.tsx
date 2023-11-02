@@ -7,12 +7,12 @@ import {Input} from "@/components/ui/input";
 import {
     Dialog,
     DialogContent,
-    DialogDescription, DialogFooter,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import {CheckCircle, ClipboardList, Loader2, Repeat2, SquareAsterisk, Terminal} from "lucide-react";
+import {CheckCircle, ClipboardList, Loader2, Repeat2, Terminal} from "lucide-react";
 import {useRef, useState} from "react";
 import {createNewUser, verifyUsername} from "@/app/server/user";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";

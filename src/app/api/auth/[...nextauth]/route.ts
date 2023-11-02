@@ -1,4 +1,4 @@
-import {UserSession} from "@/../types/custom-types"
+import {UserType} from "@/../types/custom-types"
 import {PrismaAdapter} from "@auth/prisma-adapter"
 import {NextAuthOptions} from "next-auth"
 import NextAuth from "next-auth/next"
@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         jwt: async ({token, user}) => {
-            user ? (token.user = <UserSession>user) : null
+            user ? (token.user = <UserType>user) : null
             return token
         },
         session: async ({session, token}) => {

@@ -13,7 +13,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import {ArrowUpDown, ChevronDown, ClipboardList, FileDown, Filter, MoreHorizontal, MoveUpRight} from "lucide-react"
+import {ChevronDown, ClipboardList, FileDown, Filter, MoreHorizontal, MoveUpRight} from "lucide-react"
 
 import {Button} from "@/components/ui/button"
 import {Checkbox} from "@/components/ui/checkbox"
@@ -33,27 +33,13 @@ import {
     TableCell,
     TableHead,
     TableHeader,
-    TableRow,
+    TableRow
 } from "@/components/ui/table"
-import {Order} from "@prisma/client";
-import {useContext, useEffect} from "react";
-import {findOrdersByUserId} from "@/app/server/order";
-import {UserContext} from "@/app/dashboard/userContext";
 import Link from "next/link";
+import {UserType} from "../../types/custom-types";
 
-// const data: Data[] = [
-//     {
-//         id: "m5gr834i9",
-//         article: "Article 1",
-//         equipment: "Equipment 1",
-//         production_date: "01/01/2021",
-//         warranty_period: "01/01/2021",
-//         serial_number: "123456789",
-//     }
-// ]
-export type Data = Pick<Order, "article" | "equipment" | "production_date" | "warranty_period" | "serial_number" | "id">
 
-export const columns: ColumnDef<Data>[] = [
+export const columns: ColumnDef<UserType>[] = [
     {
         id: "select",
         header: ({table}) => (
@@ -74,91 +60,74 @@ export const columns: ColumnDef<Data>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "serial_number",
-        header: () => <div className="text-center">Серийный номер</div>,
+        accessorKey: "id",
+        header: () => <div className="text-center">ID</div>,
         cell: ({row}) => (
-            <div className="capitalize text-center">{row.getValue("serial_number")}</div>
+            <div className="text-center">{row.getValue("id")}</div>
         ),
     },
     {
-        accessorKey: "article",
-        header: ({column}) => {
-            return (
-                <Button
-                    variant="ghost"
-                    className={"text-center"}
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Артикул
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
-                </Button>
-            )
-        },
-        cell: ({row}) => <div className="text-center">{row.getValue("article")}</div>,
+        accessorKey: "username",
+        header: () => <div className={"text-center"}>Логин</div>,
+
+        cell: ({row}) => <div className="text-center">{row.getValue("username")}</div>,
     },
     {
-        accessorKey: "equipment",
-        cell: ({row}) => <div className="text-center">{row.getValue("equipment")}</div>,
-        header: () => <div className="text-center">Комплектация</div>,
-    },
-    {
-        accessorKey: "production_date",
-        cell: ({row}) => <div className="text-center">{row.getValue("production_date")}</div>,
-        header: () => <div className="text-center">Дата производства</div>,
-    },
-    {
-        accessorKey: "warranty_period",
-        cell: ({row}) => <div className="text-center">{row.getValue("warranty_period")}</div>,
-        header: () => <div className="text-center">Срок гарантийного обслуживания</div>,
+        accessorKey: "role",
+        cell: ({row}) => <div className="text-center">{row.getValue("role")}</div>,
+        header: () => <div className="text-center">Роль</div>,
     },
     {
         id: "actions",
         enableHiding: false,
+        header: () => <div className="text-center">Действия</div>,
         cell: ({row}) => {
             const data = row.original
 
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Открыть меню</span>
-                            <MoreHorizontal className="h-4 w-4"/>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(data.serial_number)}
-                            className={"flex flex-row gap-4 items-center"}
-                        >
-                            <ClipboardList size={20}/>
-                            Скопировать сер. номер
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuItem>
-                            <Link href={"/../orders/" + data.serial_number + "/"}
-                                  className={"flex flex-row gap-4 items-center"}>
-                                <MoveUpRight size={20}/>
-                                Открыть паспорт
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            className={"flex flex-row gap-4 items-center"}>
-                            <Link href={"/../api/order/" + data.serial_number + "/?download=true"}
-                                  className={"flex flex-row gap-4 items-center"}>
-                                <FileDown size={20}/>
-                                Скачать паспорт
-                            </Link>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className={"text-center"}>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0 mx-auto">
+                                <span className="sr-only">Открыть меню</span>
+                                <MoreHorizontal className="h-4 w-4"/>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Действия</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                onClick={() => navigator.clipboard.writeText(data.username)}
+                                className={"flex flex-row gap-4 items-center"}
+                            >
+                                <ClipboardList size={20}/>
+                                Скопировать сер. номер
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator/>
+                            <DropdownMenuItem>
+                                <Link href={"/../orders/" + data.id + "/"}
+                                      className={"flex flex-row gap-4 items-center"}>
+                                    <MoveUpRight size={20}/>
+                                    Открыть паспорт
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className={"flex flex-row gap-4 items-center"}>
+                                <Link href={"/../api/order/" + data.id + "/?download=true"}
+                                      className={"flex flex-row gap-4 items-center"}>
+                                    <FileDown size={20}/>
+                                    Скачать паспорт
+                                </Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+
             )
         },
     },
 ]
 
-export function DataTable(props: { data: Data[] }) {
-    let data = useContext(UserContext);
+export function UsersTable(props: { data: UserType[] }) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
@@ -168,7 +137,7 @@ export function DataTable(props: { data: Data[] }) {
     const [rowSelection, setRowSelection] = React.useState({})
 
     const table = useReactTable({
-        data: data || [],
+        data: props.data || [],
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -185,12 +154,11 @@ export function DataTable(props: { data: Data[] }) {
             rowSelection,
         },
     })
+
     const data_values = {
-        article: "Артикул",
-        equipment: "Комплектация",
-        production_date: "Дата производства",
-        warranty_period: "Дата гарантийного обслуживания",
-        serial_number: "Серийный номер",
+        id: "ID",
+        username: "Логин",
+        role: "Роль",
     }
 
     return (
@@ -204,6 +172,7 @@ export function DataTable(props: { data: Data[] }) {
                     }
                     className="max-w-sm"
                 />
+
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto flex gap-4 items-center">

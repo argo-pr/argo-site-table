@@ -10,7 +10,6 @@ export default function NotFound() {
             <Button asChild className={"mt-4"}>
                 <Link href="/">Вернутся на главную </Link>
             </Button>
-
         </div>
     )
 }

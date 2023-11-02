@@ -1,8 +1,12 @@
-import {Data, DataTable} from "@/components/DataTable";
+"use client";
 
-export default function UserPage(props: { params: { data: Data[] } }) {
-    console.log(props);
+import {OrdersTable} from "@/components/OrdersTable";
+import {useContext} from "react";
+import {ContextStore} from "@/app/dashboard/ContextStore";
+
+export default function UserPage() {
+    let {orderStore} = useContext(ContextStore);
     return <>
-        <DataTable data={props.params.data}/>
+        <OrdersTable data={orderStore} type={"user"}/>
     </>
 }
