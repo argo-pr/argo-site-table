@@ -28,6 +28,17 @@ model User {
   Session    Session[]
 }
 
+model Driver {
+  id          String  @id @default(cuid())
+  motherboard String
+  gpu         String
+  chipset     String
+  audio       String
+  lan         String
+  Order       Order?  @relation(fields: [orderId], references: [id])
+  orderId     String?
+}
+
 model Order {
   id              String   @id @default(cuid())
   user_id         String
@@ -37,6 +48,7 @@ model Order {
   production_date String   @db.Text
   warranty_period String   @db.Text
   serial_number   String
+  Driver          Driver[]
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 

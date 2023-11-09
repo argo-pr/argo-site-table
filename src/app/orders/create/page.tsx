@@ -1,7 +1,7 @@
 "use client";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {Order} from "@prisma/client";
+import {Driver, Order} from "@prisma/client";
 import {useEffect, useState} from "react";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
@@ -13,7 +13,7 @@ import Link from "next/link";
 
 type IOrder = Pick<Order, "serial_number" | "article" | "warranty_period" | "production_date" | "equipment"> & {
     username: string
-}
+} & Driver
 export default function CreateOrderPage() {
     const [loading, setLoading] = useState<boolean>(false)
     const [stage, setStage] = useState<number>(0)
@@ -55,6 +55,7 @@ export default function CreateOrderPage() {
             <CardContent>
                 {stage === 0 &&
                     <form onSubmit={handleSubmit(onSubmit)} className={"flex flex-col gap-3"}>
+                        <h1 className={"text-3xl font-semibold "}>Данные заказа</h1>
                         <Label htmlFor={"serial_number"}>Серийный номер</Label>
                         <Input
                             id="serial_number"
@@ -85,6 +86,32 @@ export default function CreateOrderPage() {
                             id="username"
                             placeholder="Логин пользователя"
                             {...register("username", {required: true})}/>
+                        <h1 className={"text-3xl font-semibold "}>Драйвера</h1>
+                        <Label htmlFor={"motherboard"}>Драйвер материнской платы</Label>
+                        <Input
+                            id="motherboard"
+                            placeholder="Ссылка на драйвер материнской платы"
+                            {...register("motherboard", {required: true})}/>
+                        <Label htmlFor={"gpu"}>Драйвер видеокарты</Label>
+                        <Input
+                            id="gpu"
+                            placeholder="Ссылка на драйвер видеокарты"
+                            {...register("gpu", {required: true})}/>
+                        <Label htmlFor={"gpu"}>Драйвер чипсета</Label>
+                        <Input
+                            id="chipset"
+                            placeholder="Ссылка на драйвер чипсета"
+                            {...register("chipset", {required: true})}/>
+                        <Label htmlFor={"audio"}>Драйвер аудио</Label>
+                        <Input
+                            id="audio"
+                            placeholder="Ссылка на драйвер аудио"
+                            {...register("audio", {required: true})}/>
+                        <Label htmlFor={"lan"}>Драйвер LAN</Label>
+                        <Input
+                            id="lan"
+                            placeholder="Ссылка на драйвер LAN"
+                            {...register("lan", {required: true})}/>
                         {errors.username &&
                             <p className={"text-red-500 mx-auto text-center"}>{errors.username.message}</p>}
                         {errors.serial_number &&

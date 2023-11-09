@@ -1,6 +1,6 @@
 "use server"
 import {db} from "@/lib/db"
-import {Order} from "@prisma/client";
+import {Driver, Order} from "@prisma/client";
 import {Prisma} from ".prisma/client";
 
 const findOrdersByUserId = async (userId: string) => {
@@ -35,6 +35,21 @@ const findOrderBySerialNumber = async (serialNumber: string) => {
     })
 }
 
+const getDrivers = async (serial_number: string) => {
+    try {
+        const response = await db.order.findUnique({
+            where: {
+                serial_number: serial_number,
+            },
+            include: {
+                Driver: true
+            }
+        })
+        return {status: 200, drivers: response?.Driver}
+    } catch (e) {
+        return {status: 500, message: "Серверная ошибка"}
+    }
+}
 const getAllOrders = async () => {
     try {
         const response = await db.order.findMany({
@@ -56,7 +71,8 @@ const getAllOrders = async () => {
 
 const createNewOrder = async (order: Pick<Order, "article" | "serial_number" | "warranty_period" | "production_date" | "equipment"> & {
     username?: string
-}) => {
+} & Driver) => {
+
     try {
         const user_id = await db.user.findUnique({
             where: {
@@ -67,13 +83,27 @@ const createNewOrder = async (order: Pick<Order, "article" | "serial_number" | "
             return {status: 404, message: "Пользователь не найден"}
         }
         delete order.username
+
         const new_order = await db.order.create({
             data: {
                 user_id: user_id.id,
-                ...order
+                article: order.article,
+                serial_number: order.serial_number,
+                equipment: order.equipment,
+                production_date: order.production_date,
+                warranty_period: order.warranty_period,
             },
         })
-
+        await db.driver.create({
+            data: {
+                orderId: new_order.id,
+                motherboard: order.motherboard,
+                gpu: order.gpu,
+                chipset: order.chipset,
+                audio: order.audio,
+                lan: order.lan,
+            }
+        });
         if (new_order) {
             return {status: 200, message: "Заказ создан", order: new_order}
         }
@@ -92,4 +122,4 @@ const createNewOrder = async (order: Pick<Order, "article" | "serial_number" | "
     }
 }
 
-export {findOrdersByUserId, findOrderBySerialNumber, createNewOrder, getAllOrders}
+export {findOrdersByUserId, findOrderBySerialNumber, createNewOrder, getAllOrders, getDrivers}

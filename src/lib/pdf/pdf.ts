@@ -1,13 +1,9 @@
-// import {PDFDocument, StandardFonts, rgb} from 'pdf-lib'
-// import fontkit from '@pdf-lib/fontkit';
 import {Order} from "@prisma/client";
 import {jsPDF} from "jspdf";
 import {Base64} from "js-base64";
 import autoTable from "jspdf-autotable";
-// import {drawTable} from "pdf-lib-draw-table-beta";
-// import {DrawTableOptions} from "pdf-lib-draw-table-beta/types";
-// import {TableOptionsDeepPartial} from "pdf-lib-draw-table-beta/build/types";
-
+import {parse} from 'node-html-parser';
+import PdfList from "@/components/pdf-list";
 
 const generatePDF = async (params: {
     order: Pick<Order, "serial_number" | "article" | "warranty_period" | "production_date" | "equipment">
@@ -18,100 +14,107 @@ const generatePDF = async (params: {
     const font = await fetch(
         params.url + '/pdf/arial.ttf',
     ).then((res) => res.arrayBuffer());
-    const logo = await fetch(
-        params.url + '/pdf/pdf-logo.png',
-    ).then((res) => res.arrayBuffer());
-    const eac_logo = await fetch(
-        params.url + '/pdf/eac.png',
-    ).then((res) => res.arrayBuffer());
+
 
     const doc = new jsPDF();
     doc.addFileToVFS("MyFont.ttf", Base64.fromUint8Array(new Uint8Array(font)));
     doc.addFont("MyFont.ttf", "MyFont", "normal");
     doc.setFont("MyFont");
-    doc.addImage(Base64.fromUint8Array(new Uint8Array(logo)), "PNG", 15, 15, 32, 12);
-    autoTable(doc, {
-        theme: "plain",
-        styles: {font: "MyFont"},
+    doc.setFontSize(18);
+    doc.text("Паспорт устройства", 105, 15, {
+        align: "center",
+        maxWidth: 150
+    },);
+    doc.text("Персональный компьютер PrimeBox", 105, 22, {
+        align: "center",
+        maxWidth: 150
+    },);
+    doc.setFontSize(12);
+    const table = autoTable(doc, {
+        theme: "grid",
+        styles: {
+            textColor: [0, 0, 0],
+            font: "MyFont",
+            fontSize: 12
+        },
+        startY: 28,
         margin: {top: 25},
         body: [
+            ['Наименование и артикул:', "Персональный компьютер Micro " + params.order.article],
             ['Серийный номер:', params.order.serial_number],
-            ['Артикул:', params.order.article],
-            ['Срок гарантии:', params.order.warranty_period],
+            ['Комплектация оборудования:', params.order.equipment],
             ['Дата производства:', params.order.production_date],
-            ['Оборудование:', params.order.equipment],
+            ["Изготовитель:", "ООО «Праймбокс»"]
         ],
     })
-    // doc.text("Паспорт устройства", 50, 200);
+    //@ts-ignore
+    let finalY = doc.lastAutoTable!.finalY
 
+    doc.text(`Гарантийный срок на товар составляет ${params.order.warranty_period} с момента исполнения Поставщиком обязательства по поставке товара`, 15, finalY + 8, {
+        align: "left",
+        maxWidth: 200
+    });
+    doc.text(`Гарантия не распространяется на:`, 15, finalY + 24, {
+        align: "left",
+        maxWidth: 200
+    });
+    autoTable(doc, {
+        theme: "plain",
+        styles: {
+            textColor: [0, 0, 0],
+            font: "MyFont",
+            fontSize: 12
+        },
+        margin: {top: 25, left: 25},
+        startY: finalY + 30,
+        body: [
+            ['-', `Повреждения, вызванные неправильной эксплуатацией оборудования (в том числе и в нештатном режиме или условиях, не предусмотренных производителем), либо неправильным подключением, либо возникшие в следствие сторонних обстоятельств (стихийные бедствия, скачки напряжения и т.д.);`],
+            ['-', `Механические и/или электротермические повреждения;`],
+            ['-', `Повреждений изделия, вызванные попаданием внутрь посторонних предметов, жидкостей, насекомых и т.п.`],
+            ['-', `Повреждения материнской платы, процессора, видеокарты и т.д., вызванные попытками эксплуатации в нештатном режиме, с превышением номинальных эксплуатационных характеристик (разгон);`],
+            ['-', `Повреждение фирменных серийных номеров на устройстве;`],
+            ['-', `Процессоры, поврежденные из-за неправильного функционирования системы охлаждения;`],
+            ['-', `Появление «битых пикселей» на экране ЖК монитора, а также иных товаров, имеющих ЖК экран;`],
+            ['-', `Отсутствие в товаре функций, не предусмотренных производителем.`],
+            ['-', `На ущерб, причиненный другому оборудованию, работающему в сопряжении сданным изделием;`],
+            ['-', `На совместимость данного изделия с изделиями и программными продуктами третьих сторон в части их совместимости, конфигурирования систем и установки драйверов;`],
+            ['-', `Отсутствие в товаре функций, не предусмотренных производителем.`],
+            ['-', `Продавец оставляет за собой право при предъявлении претензии по гарантии потребовать у Покупателя документы, подтверждающие легальность используемого программного обеспечения;`],
+            ['-', `Не допускается подключение периферийных устройств к интерфейсным портам (за исключением USB-порта) при включенном питании периферийных устройств;`],
+            ['-', `При повреждении целостности пломбы, ограничивающей доступ внутрь корпуса моноблока, до истечения гарантийного срока не уполномоченным дилером или сервисным центром компании Prime Box, гарантия на моноблок автоматически прекращает своё действие.`],
+            ['-', `Не принимаются претензии по комплектации, механическим повреждениям, экстремальным термическим повреждениям и другим повреждениям, вызванным в результате вскрытия корпуса;`],
+            ['-', `В случае нарушения комплектности изделия (отсутствие драйверов, документации, соединительных кабелей, крепежа или оригинальной упаковки), гарантийное обслуживание не осуществляется, либо осуществляется в ограниченном объеме;`],
+        ],
+    })
+    //@ts-ignore
+    finalY = doc.lastAutoTable!.finalY
 
-//     const pdfDoc = await PDFDocument.create();
-//     const page = pdfDoc.addPage()
-//     // Регистрируем ру шрифт
-//     pdfDoc.registerFontkit(fontkit);
-//     const ruFont = await pdfDoc.embedFont(font);
-//
-//
-//     //Рисуем лого
-//     const img_1 = await pdfDoc.embedPng(logo);
-//     const img_1_scaled = img_1.scale(0.75);
-//     page.drawImage(img_1, {
-//         x: 50,
-//         y: 750,
-//         width: img_1_scaled.width,
-//         height: img_1_scaled.height,
-//     });
-//
-//     const img_2 = await pdfDoc.embedPng(eac_logo);
-//     const img_2_scaled = img_1.scale(0.45);
-//     page.drawImage(img_2, {
-//         x: 460,
-//         y: 750,
-//         width: img_2_scaled.width,
-//         height: img_2_scaled.height + 35,
-//     });
-//
-//     const text_1 = "https://techpass.ru/";
-//     const text_2 = "service@techpass.ru";
-//     const text_3 = "+7 999 999-99-99";
-//     page.drawText(text_1, {x: 285, y: 788, size: 11, font: ruFont});
-//     page.drawText(text_2, {x: 285, y: 774, size: 11, font: ruFont});
-//     page.drawText(text_3, {x: 285, y: 760, size: 11, font: ruFont});
-//
-//
-//     const text_4 = "Паспорт устройства";
-//     const text_5 = params.order.article;
-//     page.drawText(text_4, {x: 50, y: 710, size: 24, font: ruFont});
-//     page.drawText(text_5, {x: 50, y: 690, size: 14, font: ruFont});
-//
-//     const tableData = [
-//         ["Серийный номер:", params.order.serial_number],
-//     ]
-//     // Set the starting X and Y coordinates for the table
-//     const startX = 50;
-//     const startY = 750;
-//
-//     // Set the table options
-//     const options: TableOptionsDeepPartial<DrawTableOptions> | undefined = {
-//         font: ruFont,
-//         textSize: 14,
-//         contentAlignment: "center",
-//         column: {}
-//
-//
-//     };
-//
-//
-//     const tableDimensions = await drawTable(pdfDoc, page, tableData, startX, startY, options);
-// // Get the width and height of the page
-//     const {width, height} = page.getSize()
-//
-// // Draw a string of text toward the top of the page
-//     const fontSize = 30
-//
-//
-// // Serialize the PDFDocument to bytes (a Uint8Array)
-//     const pdfBytes = await pdfDoc.save({})
+    doc.text("ОТКАЗ ОТ ОТВЕТСТВЕННОСТИ ЗА СОПУТСТВУЮЩИЕ УБЫТКИ:", 15, finalY + 8, {
+        align: "left",
+        maxWidth: 150
+    });
+
+    autoTable(doc, {
+        theme: "plain",
+        styles: {
+            textColor: [0, 0, 0],
+            font: "MyFont",
+            fontSize: 12
+        },
+        startY: finalY + 10,
+        margin: {top: 25, left: 25},
+        body: [
+            ['-', `Продавец ни при каких условиях не несет ответственности за какой-либо ущерб (включая все, без исключения, случаи потери прибылей, прерывания деловой активности, потери деловой информации, либо других денежных потерь), связанных с использованием или невозможностью использования купленного оборудования.`],
+        ],
+    })
+
+    //@ts-ignore
+    finalY = doc.lastAutoTable!.finalY
+
+    doc.text("Контакты сервисного центра: +7 8182 47-01-10, ig_abramov@mail.ru. При обращении в сервисный центр необходимо указать (Номер гос. контракта, модель неисправного оборудования, серийный номер, неисправность, адрес, контакт, мобильный или городской телефон)", 15, finalY + 8, {
+        align: "left",
+        maxWidth: 185
+    });
     return doc.output("arraybuffer")
 }
 
